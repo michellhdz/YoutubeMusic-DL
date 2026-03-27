@@ -1,5 +1,5 @@
 > [!CAUTION]
-> ### ⚖️ Legal Disclaimer / Descargo de Responsabilidad
+> ### ⚖️ Legal Disclaimer
 > **English:** This tool is for **educational and personal research purposes only**. The developer does not encourage, incite, or condone the illegal download of copyrighted material. By using this software, you agree that you are solely responsible for complying with the YouTube Music Terms of Service and the copyright laws applicable in your jurisdiction. The author is not responsible for any misuse of this tool or any potential account suspensions.
 >
 
