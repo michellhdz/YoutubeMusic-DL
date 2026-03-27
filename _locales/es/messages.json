@@ -1,0 +1,125 @@
+{
+    "extName": {
+        "message": "YouTube Music DL"
+    },
+    "extDescription": {
+        "message": "Exporta tus canciones de YouTube Music con metadata e imagen incrustada."
+    },
+    "appTitle": {
+        "message": "YouTube Music DL"
+    },
+    "appSubtitle": {
+        "message": "Tu música, en todos tus dispositivos"
+    },
+    "waitingSong": {
+        "message": "Esperando canción..."
+    },
+    "openYTM": {
+        "message": "Abre YouTube Music y reproduce algo"
+    },
+    "waitingAudio": {
+        "message": "Esperando audio..."
+    },
+    "btnExport": {
+        "message": "Exportar"
+    },
+    "progressExportingAudio": {
+        "message": "Exportando audio..."
+    },
+    "tipText": {
+        "message": "Reproduce la canción unos segundos antes de exportar para que se capture el stream de audio."
+    },
+    "statusExportingAudioExt": {
+        "message": "Exportando audio ($1)...",
+        "placeholders": {
+            "1": {
+                "content": "$1"
+            }
+        }
+    },
+    "statusExportingData": {
+        "message": "Exportando... $1MB de $2MB",
+        "placeholders": {
+            "1": {
+                "content": "$1"
+            },
+            "2": {
+                "content": "$2"
+            }
+        }
+    },
+    "statusExportingDataNoTotal": {
+        "message": "Exportando... $1MB",
+        "placeholders": {
+            "1": {
+                "content": "$1"
+            }
+        }
+    },
+    "statusExportingCover": {
+        "message": "Exportando portada..."
+    },
+    "statusWritingMeta": {
+        "message": "Escribiendo metadata..."
+    },
+    "statusSavingFile": {
+        "message": "Guardando archivo..."
+    },
+    "statusDone": {
+        "message": "¡Listo! ✓"
+    },
+    "statusSaved": {
+        "message": "Guardado: $1",
+        "placeholders": {
+            "1": {
+                "content": "$1"
+            }
+        }
+    },
+    "errorGeneric": {
+        "message": "Error: $1",
+        "placeholders": {
+            "1": {
+                "content": "$1"
+            }
+        }
+    },
+    "errorOpenYTMFirst": {
+        "message": "Abre YouTube Music primero"
+    },
+    "notOnYTM": {
+        "message": "No estás en YouTube Music"
+    },
+    "goToYTM": {
+        "message": "Ve a music.youtube.com"
+    },
+    "statusReadingSong": {
+        "message": "Leyendo canción..."
+    },
+    "errorReloadYTM": {
+        "message": "Recarga YouTube Music e intenta de nuevo"
+    },
+    "errorNoSongDetected": {
+        "message": "No se detectó canción"
+    },
+    "noTitle": {
+        "message": "Sin título"
+    },
+    "unknownArtist": {
+        "message": "Artista desconocido"
+    },
+    "statusReadyExport": {
+        "message": "Listo para exportar — $1",
+        "placeholders": {
+            "1": {
+                "content": "$1"
+            }
+        }
+    },
+    "statusPlaySeconds": {
+        "message": "Reproduce la canción unos segundos..."
+    },
+    "errorNoAudioReload": {
+        "message": "No se capturó audio. Recarga la página."
+    }
+}

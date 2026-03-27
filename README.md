@@ -23,6 +23,12 @@ This extension solves the common issue of broken ID3 tags and incompatible MP4 a
     * **Atom Boundary Repair**: Fixes UTF-8 byte-offset bugs in standard MP4 atoms (`hdlr` and `ilst`).
     * **ISOBMFF Brand Optimization**: Implements a byte-level patch for fragmented MP4 (DASH) files, updating brand identifiers to ensure local metadata blocks are globally recognized by offline hardware.
 
+## 🌐 Localization & Languages
+
+This extension is fully multi-language and currently natively supports **English** and **Spanish**! 
+
+The UI language automatically syncs with your browser's default settings. **You are completely free and encouraged to add more languages!** To contribute, simply clone the repository, duplicate the `_locales/en/messages.json` file into your own language code folder (e.g., `_locales/fr`), perfectly translate the string values, and submit a Pull Request.
+
 ## 🚀 Setup
 
 1.  Download this repository to your local machine.

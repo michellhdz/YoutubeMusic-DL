@@ -63,21 +63,25 @@ async function readStream(response, onProgress) {
 async function downloadWithCover(audioUrl, songInfo) {
   btnDownload.disabled = true;
   const { mime, ext } = detectFormat(audioUrl);
-  setProgress(true, `Descargando audio (${ext.toUpperCase()})...`, 5);
+  setProgress(true, chrome.i18n.getMessage('statusExportingAudioExt', [ext.toUpperCase()]), 5);
 
   try {
     // 1. Descargar audio
     const audioResp = await fetch(audioUrl);
-    if (!audioResp.ok) throw new Error(`HTTP ${audioResp.status} al descargar audio`);
+    if (!audioResp.ok) throw new Error(`${audioResp.status}`);
 
     let audioBuffer = await readStream(audioResp, (received, total) => {
       const pct = total > 0
         ? Math.round(5 + (received / total) * 60)
         : Math.min(60, 5 + Math.round(received / 50000));
-      setProgress(true, `Descargando... ${(received / 1024 / 1024).toFixed(1)}MB${total > 0 ? ' de ' + (total / 1024 / 1024).toFixed(1) + 'MB' : ''}`, pct);
+      if (total > 0) {
+        setProgress(true, chrome.i18n.getMessage('statusExportingData', [(received / 1024 / 1024).toFixed(1), (total / 1024 / 1024).toFixed(1)]), pct);
+      } else {
+        setProgress(true, chrome.i18n.getMessage('statusExportingDataNoTotal', [(received / 1024 / 1024).toFixed(1)]), pct);
+      }
     });
 
-    setProgress(true, 'Descargando portada...', 70);
+    setProgress(true, chrome.i18n.getMessage('statusExportingCover'), 70);
 
     // 2. Descargar portada
     let coverBuffer = null;
@@ -114,13 +118,13 @@ async function downloadWithCover(audioUrl, songInfo) {
     }
 
     // 3. Escribir metadata
-    setProgress(true, 'Escribiendo metadata...', 82);
+    setProgress(true, chrome.i18n.getMessage('statusWritingMeta'), 82);
     try {
       if (ext === 'm4a') {
         const tagger = new MP4Tagger(audioBuffer);
         audioBuffer = tagger.addTags({
-          title: songInfo.title || 'Canción',
-          artist: songInfo.artist || 'Artista',
+          title: songInfo.title || chrome.i18n.getMessage('noTitle'),
+          artist: songInfo.artist || chrome.i18n.getMessage('unknownArtist'),
           album: songInfo.album || 'YouTube Music',
           year: songInfo.year || '',
           track: songInfo.track || 0,
@@ -128,8 +132,8 @@ async function downloadWithCover(audioUrl, songInfo) {
         });
       } else {
         const writer = new ID3Writer(audioBuffer);
-        writer.setFrame('TIT2', songInfo.title || 'Canción')
-          .setFrame('TPE1', songInfo.artist || 'Artista')
+        writer.setFrame('TIT2', songInfo.title || chrome.i18n.getMessage('noTitle'))
+          .setFrame('TPE1', songInfo.artist || chrome.i18n.getMessage('unknownArtist'))
           .setFrame('TALB', songInfo.album || 'YouTube Music');
         if (coverBuffer) {
           writer.setFrame('APIC', {
@@ -147,7 +151,7 @@ async function downloadWithCover(audioUrl, songInfo) {
     }
 
     // 4. Descargar
-    setProgress(true, 'Guardando archivo...', 95);
+    setProgress(true, chrome.i18n.getMessage('statusSavingFile'), 95);
     const blob = new Blob([audioBuffer], { type: mime });
     const blobUrl = URL.createObjectURL(blob);
     const filename = sanitizeFilename(`${songInfo.artist} - ${songInfo.title}`) + '.' + ext;
@@ -158,14 +162,14 @@ async function downloadWithCover(audioUrl, songInfo) {
     a.click();
     setTimeout(() => URL.revokeObjectURL(blobUrl), 5000);
 
-    setProgress(true, '¡Listo! ✓', 100);
-    setStatus('active', `Guardado: ${filename}`);
+    setProgress(true, chrome.i18n.getMessage('statusDone'), 100);
+    setStatus('active', chrome.i18n.getMessage('statusSaved', [filename]));
     setTimeout(() => { setProgress(false); btnDownload.disabled = false; }, 4000);
 
   } catch (err) {
     console.error(err);
     setProgress(false);
-    setStatus('error', 'Error: ' + (err.message || 'algo salió mal'));
+    setStatus('error', chrome.i18n.getMessage('errorGeneric', [err.message || 'error']));
     btnDownload.disabled = false;
   }
 }
@@ -175,27 +179,27 @@ async function init() {
     const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
 
     if (!tab?.url?.includes('music.youtube.com')) {
-      setStatus('error', 'Abre YouTube Music primero');
-      songTitle.textContent = 'No estás en YouTube Music';
-      songArtist.textContent = 'Ve a music.youtube.com';
+      setStatus('error', chrome.i18n.getMessage('errorOpenYTMFirst'));
+      songTitle.textContent = chrome.i18n.getMessage('notOnYTM');
+      songArtist.textContent = chrome.i18n.getMessage('goToYTM');
       return;
     }
 
-    setStatus('loading', 'Leyendo canción...');
+    setStatus('loading', chrome.i18n.getMessage('statusReadingSong'));
 
     let songInfo = null;
     try {
       songInfo = await chrome.tabs.sendMessage(tab.id, { type: 'GET_SONG_INFO' });
     } catch (e) {
-      setStatus('error', 'Recarga YouTube Music e intenta de nuevo');
+      setStatus('error', chrome.i18n.getMessage('errorReloadYTM'));
       return;
     }
 
-    if (!songInfo) { setStatus('error', 'No se detectó canción'); return; }
+    if (!songInfo) { setStatus('error', chrome.i18n.getMessage('errorNoSongDetected')); return; }
 
     currentSongInfo = songInfo;
-    songTitle.textContent = songInfo.title || 'Sin título';
-    songArtist.textContent = songInfo.artist || 'Artista desconocido';
+    songTitle.textContent = songInfo.title || chrome.i18n.getMessage('noTitle');
+    songArtist.textContent = songInfo.artist || chrome.i18n.getMessage('unknownArtist');
 
     if (songInfo.thumbnail) {
       coverImg.src = songInfo.thumbnail;
@@ -209,10 +213,10 @@ async function init() {
     if (audioUrl) {
       currentAudioUrl = audioUrl;
       const { ext } = detectFormat(audioUrl);
-      setStatus('active', `Listo para descargar — ${ext.toUpperCase()}`);
+      setStatus('active', chrome.i18n.getMessage('statusReadyExport', [ext.toUpperCase()]));
       btnDownload.disabled = false;
     } else {
-      setStatus('loading', 'Reproduce la canción unos segundos...');
+      setStatus('loading', chrome.i18n.getMessage('statusPlaySeconds'));
       let attempts = 0;
       const interval = setInterval(async () => {
         attempts++;
@@ -227,20 +231,25 @@ async function init() {
         if (url) {
           currentAudioUrl = url;
           const { ext } = detectFormat(url);
-          setStatus('active', `Listo para descargar — ${ext.toUpperCase()}`);
+          setStatus('active', chrome.i18n.getMessage('statusReadyExport', [ext.toUpperCase()]));
           btnDownload.disabled = false;
           clearInterval(interval);
         }
         if (attempts > 30) {
           clearInterval(interval);
-          setStatus('error', 'No se capturó audio. Recarga la página.');
+          setStatus('error', chrome.i18n.getMessage('errorNoAudioReload'));
         }
       }, 1000);
     }
   } catch (err) {
-    setStatus('error', 'Error: ' + err.message);
+    setStatus('error', chrome.i18n.getMessage('errorGeneric', [err.message]));
   }
 }
+
+// Inicializar traducciones DOM
+document.querySelectorAll('[data-i18n]').forEach(el => {
+  el.textContent = chrome.i18n.getMessage(el.getAttribute('data-i18n'));
+});
 
 btnDownload.addEventListener('click', () => {
   if (currentAudioUrl && currentSongInfo) downloadWithCover(currentAudioUrl, currentSongInfo);

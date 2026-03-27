@@ -243,8 +243,8 @@
   <div class="header">
     <div class="logo">🎵</div>
     <div>
-      <div class="header-title">YouTube Music DL</div>
-      <div class="header-sub">Descargador personal</div>
+      <div class="header-title" data-i18n="appTitle">YouTube Music DL</div>
+      <div class="header-sub" data-i18n="appSubtitle">Tu música, en todos tus dispositivos</div>
     </div>
   </div>
 
@@ -252,23 +252,23 @@
     <div class="song-cover-placeholder" id="coverPlaceholder">🎵</div>
     <img class="song-cover" id="coverImg" style="display:none" alt="cover">
     <div class="song-info">
-      <div class="song-title" id="songTitle">Esperando canción...</div>
-      <div class="song-artist" id="songArtist">Abre YouTube Music y reproduce algo</div>
+      <div class="song-title" id="songTitle" data-i18n="waitingSong">Esperando canción...</div>
+      <div class="song-artist" id="songArtist" data-i18n="openYTM">Abre YouTube Music y reproduce algo</div>
     </div>
   </div>
 
   <div class="status-bar">
     <div class="status-dot" id="statusDot"></div>
-    <span id="statusText">Esperando audio...</span>
+    <span id="statusText" data-i18n="waitingAudio">Esperando audio...</span>
   </div>
 
   <button class="btn-download" id="btnDownload" disabled>
-    <span>⬇</span> Descargar
+    <span>⬇</span> <span data-i18n="btnExport">Exportar</span>
   </button>
 
   <div class="progress-wrap" id="progressWrap">
     <div class="progress-label">
-      <span id="progressLabel">Descargando audio...</span>
+      <span id="progressLabel" data-i18n="progressExportingAudio">Exportando audio...</span>
       <span id="progressPct">0%</span>
     </div>
     <div class="progress-bar">
@@ -276,8 +276,8 @@
     </div>
   </div>
 
-  <div class="tip">
-    Reproduce la canción unos segundos antes de descargar para que se capture el stream de audio.
+  <div class="tip" data-i18n="tipText">
+    Reproduce la canción unos segundos antes de exportar para que se capture el stream de audio.
   </div>
 
   <script src="popup.js"></script>
