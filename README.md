@@ -2,9 +2,8 @@
 
 > [!CAUTION]
 > ### ⚖️ Legal Disclaimer / Descargo de Responsabilidad
-> **English:** This tool is for **educational and personal research purposes only**. It is designed to help users manage and add metadata to their own personal music libraries. The developer does not encourage or condone the unauthorized acquisition of copyrighted material. Users are solely responsible for complying with the YouTube Music Terms of Service and local copyright laws.
+> This tool is for **educational and personal research purposes only**. It is designed to help users manage and add metadata to their own personal music libraries. The developer does not encourage or condone the unauthorized acquisition of copyrighted material. Users are solely responsible for complying with the YouTube Music Terms of Service and local copyright laws.
 > 
-> **Español:** Esta herramienta tiene fines **exclusivamente educativos y de investigación personal**. Está diseñada para ayudar a los usuarios a gestionar y añadir metadatos a sus propias bibliotecas personales. El desarrollador no fomenta ni condona la adquisición no autorizada de material protegido. Los usuarios son responsables de cumplir con los Términos de Servicio de YouTube Music y las leyes locales.
 
 ---
 
