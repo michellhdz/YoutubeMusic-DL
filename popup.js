@@ -110,6 +110,12 @@ async function downloadWithCover(audioUrl, songInfo) {
             coverBuffer = arr.buffer;
           } catch (err) {
             console.error("Canvas toDataURL failed", err);
+          } finally {
+            // Liberar memoria asignada al Canvas y al Bitmap
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            canvas.width = 0;
+            canvas.height = 0;
+            if (bmp && bmp.close) bmp.close();
           }
         }
       } catch (e) {
@@ -152,7 +158,7 @@ async function downloadWithCover(audioUrl, songInfo) {
 
     // 4. Descargar
     setProgress(true, chrome.i18n.getMessage('statusSavingFile'), 95);
-    const blob = new Blob([audioBuffer], { type: mime });
+    let blob = new Blob([audioBuffer], { type: mime });
     const blobUrl = URL.createObjectURL(blob);
     const filename = sanitizeFilename(`${songInfo.artist} - ${songInfo.title}`) + '.' + ext;
 
@@ -160,7 +166,14 @@ async function downloadWithCover(audioUrl, songInfo) {
     a.href = blobUrl;
     a.download = filename;
     a.click();
-    setTimeout(() => URL.revokeObjectURL(blobUrl), 5000);
+
+    // Revocar la URL y limpiar buffers para el Garbage Collector inmediatamente
+    setTimeout(() => {
+      URL.revokeObjectURL(blobUrl);
+      blob = null;
+      audioBuffer = null;
+      coverBuffer = null;
+    }, 150);
 
     setProgress(true, chrome.i18n.getMessage('statusDone'), 100);
     setStatus('active', chrome.i18n.getMessage('statusSaved', [filename]));

@@ -2,19 +2,19 @@
 
 > [!CAUTION]
 > ### ⚖️ Legal Disclaimer / Descargo de Responsabilidad
-> This tool is for **educational and personal research purposes only**. It is designed to help users manage and add metadata to their own personal music libraries. The developer does not encourage or condone the unauthorized acquisition of copyrighted material. Users are solely responsible for complying with the YouTube Music Terms of Service and local copyright laws.
+> This tool is for **educational and personal research purposes only**. It was developed as a personal solution to manage and archive the developer's own music library, specifically to provide a more streamlined way to access personal tracks previously uploaded to YouTube Music where official export methods were found to be inefficient. The developer does not encourage or condone the unauthorized acquisition of copyrighted material. Users are solely responsible for complying with the YouTube Music Terms of Service and local copyright laws.
 > 
 
 ---
 
-A precision-engineered Chrome Extension designed to enhance the **interoperability and metadata integrity** of audio files within the YouTube Music ecosystem, specifically for personal library management.
+The ultimate toolkit to achieve true offline portability for your music library.
 
-This extension solves the common issue of broken ID3 tags and incompatible MP4 atoms, ensuring that your personal audio collection remains flawlessly organized and readable by professional offline software players.
+This extension allows you to bridge the gap between streaming and your local high-fidelity players. It captures audio streams directly in-browser and reconstructs them into perfectly tagged, standalone .m4a files—ensuring your personal collection is never "locked in" and remains compatible with any offline hardware or software.
 
 ## ✨ Features
 
-* **Extended Library Support**: Seamlessly manage metadata for both the official catalog and your own **personal uploaded library**.
-* **Native Stream Processing**: Handles audio stream data directly in the browser using Vanilla JavaScript, ensuring a lightweight footprint without external dependencies like `ffmpeg`.
+* **Extended Source Support**: Seamlessly manage metadata for the official track catalog, **podcasts**, and your own **personal uploaded library**.
+* **Native Stream Processing & Zero Leaks**: Handles audio stream data directly in the browser using Vanilla JavaScript without external tools like `ffmpeg`. Aggressive Garbage Collection logic actively nullifies multi-megabyte `Uint8Array` payloads, destroys Canvas image-contexts, and revokes standard BLOB URIs instantly upon download—guaranteeing your RAM footprint instantly resets even after exporting hours-long podcasts.
 * **Deep Metadata Integration**: Connects to the MediaSession APIs to extract and embed **Title, Artist, Album, Year, and Track Number** directly into the file structure.
 * **Smart Artwork Processing**: Automatically standardizes cover art by converting thumbnails to high-quality, universally-compliant JPEGs using HTML5 Canvas.
 * **Advanced Compatibility Patches**:
@@ -38,9 +38,9 @@ The UI language automatically syncs with your browser's default settings. **You 
 ## 🎧 Usage
 
 1.  Navigate to `music.youtube.com`.
-2.  While playing a track from your library, click the **Toolkit** icon.
+2.  While playing a track, playlist, or podcast, click the **Extension** icon in your toolbar.
 3.  Verify the extracted metadata and artwork in the preview popup.
-4.  Click **Export/Save** to generate the localized file.
+4.  Click **Export** to generate the localized file.
 5.  Your file is now ready for any standard music player with all tags perfectly embedded.
 
 ## 🛠️ Technical Architecture
