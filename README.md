@@ -1,3 +1,8 @@
+> [!CAUTION]
+> ### ⚖️ Legal Disclaimer / Descargo de Responsabilidad
+> **English:** This tool is for **educational and personal research purposes only**. The developer does not encourage, incite, or condone the illegal download of copyrighted material. By using this software, you agree that you are solely responsible for complying with the YouTube Music Terms of Service and the copyright laws applicable in your jurisdiction. The author is not responsible for any misuse of this tool or any potential account suspensions.
+>
+
 # YouTube Music DL
 
 A lightweight, powerful, and precision-engineered Chrome Extension to download tracks natively and directly from both the **official YouTube Music catalog** and your **personal uploaded music library**.
