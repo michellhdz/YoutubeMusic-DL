@@ -7,9 +7,14 @@
   function isAudioUrl(url) {
     if (!url) return false;
     if (!url.includes('videoplayback')) return false;
+
     try {
-      const itag = parseInt(new URL(url).searchParams.get('itag') || '0');
-      const videoOnly = [137, 248, 136, 247, 135, 244, 134, 243, 133, 242, 160, 278, 249, 250, 251];
+      const u = new URL(url);
+      const mime = u.searchParams.get('mime') || '';
+      if (mime.includes('webm')) return false;
+
+      const itag = parseInt(u.searchParams.get('itag') || '0');
+      const videoOnly = [137, 248, 136, 247, 135, 244, 134, 243, 133, 242, 160, 278, 298, 299, 302, 303, 308, 315];
       if (videoOnly.includes(itag)) return false;
     } catch (e) { }
     return true;
@@ -38,17 +43,45 @@
 
   function getSongInfo() {
     try {
-      const title =
+      const ms = navigator.mediaSession && navigator.mediaSession.metadata;
+
+      let title = ms?.title ||
         document.querySelector('.title.ytmusic-player-bar')?.textContent?.trim() ||
         document.querySelector('yt-formatted-string.title')?.textContent?.trim() ||
         'Canción';
 
-      const artist =
-        document.querySelector('.byline.ytmusic-player-bar a')?.textContent?.trim() ||
-        document.querySelector('span.subtitle a')?.textContent?.trim() ||
-        'Artista';
+      let artist = ms?.artist || '';
+      let album = ms?.album || '';
+      let year = '';
+      let track = 0;
 
-      let thumbnail =
+      const bylineParts = (document.querySelector('.byline.ytmusic-player-bar')?.textContent || '').split('•').map(p => p.trim());
+      if (!artist || artist === 'Artista') {
+        artist = bylineParts[0] || document.querySelector('span.subtitle a')?.textContent?.trim() || 'Artista';
+      }
+
+      if (bylineParts.length >= 3) {
+        if (!album) album = bylineParts[1];
+        year = bylineParts[2];
+      } else if (bylineParts.length === 2) {
+        if (/^\\d{4}$/.test(bylineParts[1])) {
+          year = bylineParts[1];
+        } else {
+          if (!album) album = bylineParts[1];
+        }
+      }
+
+      const queueItems = document.querySelectorAll('ytmusic-player-queue-item');
+      if (queueItems.length > 0) {
+        for (let i = 0; i < queueItems.length; i++) {
+          if (queueItems[i].hasAttribute('selected')) {
+            track = i + 1;
+            break;
+          }
+        }
+      }
+
+      let thumbnail = ms?.artwork?.[ms.artwork.length - 1]?.src ||
         document.querySelector('#thumbnail.ytmusic-player-bar img')?.src ||
         document.querySelector('img.ytmusic-player-bar')?.src ||
         document.querySelector('ytmusic-player-bar img')?.src ||
@@ -63,9 +96,9 @@
         document.querySelector('ytmusic-player')?.getAttribute('video-id') ||
         null;
 
-      return { title, artist, thumbnail, videoId, capturedUrl };
+      return { title, artist, album, year, track, thumbnail, videoId, capturedUrl };
     } catch (e) {
-      return { title: 'Canción', artist: 'Artista', thumbnail: null, videoId: null, capturedUrl };
+      return { title: 'Canción', artist: 'Artista', album: '', year: '', track: 0, thumbnail: null, videoId: null, capturedUrl };
     }
   }
 

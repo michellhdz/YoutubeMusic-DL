@@ -83,17 +83,29 @@ async function downloadWithCover(audioUrl, songInfo) {
     let coverBuffer = null;
     if (songInfo.thumbnail) {
       try {
-        // Force Accept header to prefer JPEG over WebP
-        const imgResp = await fetch(songInfo.thumbnail, {
-          headers: { 'Accept': 'image/jpeg' }
-        });
+        const imgResp = await fetch(songInfo.thumbnail);
         if (imgResp.ok) {
-          const buffer = await imgResp.arrayBuffer();
-          const view = new Uint8Array(buffer);
-          // Only include if it is JPEG (0xFF) or PNG (0x89)
-          // 0x52 ('R' for RIFF/WebP) breaks the MP4 tagger on Mac.
-          if (view.length > 0 && (view[0] === 0xff || view[0] === 0x89)) {
-            coverBuffer = buffer;
+          const blob = await imgResp.blob();
+          const bmp = await window.createImageBitmap(blob);
+          const canvas = document.createElement('canvas');
+          canvas.width = bmp.width;
+          canvas.height = bmp.height;
+          const ctx = canvas.getContext('2d');
+          ctx.fillStyle = '#ffffff';
+          ctx.fillRect(0, 0, canvas.width, canvas.height);
+          ctx.drawImage(bmp, 0, 0);
+
+          try {
+            const dataUrl = canvas.toDataURL('image/jpeg', 0.9);
+            const b64 = dataUrl.split(',')[1];
+            const binStr = atob(b64);
+            const arr = new Uint8Array(binStr.length);
+            for (let i = 0; i < binStr.length; i++) {
+              arr[i] = binStr.charCodeAt(i);
+            }
+            coverBuffer = arr.buffer;
+          } catch (err) {
+            console.error("Canvas toDataURL failed", err);
           }
         }
       } catch (e) {
@@ -109,12 +121,16 @@ async function downloadWithCover(audioUrl, songInfo) {
         audioBuffer = tagger.addTags({
           title: songInfo.title || 'Canción',
           artist: songInfo.artist || 'Artista',
+          album: songInfo.album || 'YouTube Music',
+          year: songInfo.year || '',
+          track: songInfo.track || 0,
           coverBuffer,
         });
       } else {
         const writer = new ID3Writer(audioBuffer);
         writer.setFrame('TIT2', songInfo.title || 'Canción')
-          .setFrame('TPE1', songInfo.artist || 'Artista');
+          .setFrame('TPE1', songInfo.artist || 'Artista')
+          .setFrame('TALB', songInfo.album || 'YouTube Music');
         if (coverBuffer) {
           writer.setFrame('APIC', {
             type: 3,

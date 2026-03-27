@@ -51,6 +51,18 @@ class MP4Tagger {
     return this.makeAtom('covr', dataAtom);
   }
 
+  // Crear átomo trkn (número de pista)
+  makeTrackAtom(track, total = 0) {
+    const payload = new Uint8Array([
+      0, 0,
+      (track >> 8) & 0xff, track & 0xff,
+      (total >> 8) & 0xff, total & 0xff,
+      0, 0
+    ]);
+    const dataAtom = this.makeDataAtom(0, payload);
+    return this.makeAtom('trkn', dataAtom);
+  }
+
   // Encontrar átomo por nombre en el buffer
   findAtom(buffer, name, offset = 0) {
     const view = new DataView(buffer);
@@ -92,13 +104,16 @@ class MP4Tagger {
     return null;
   }
 
-  addTags({ title, artist, coverBuffer }) {
+  addTags({ title, artist, album, year, track, coverBuffer }) {
     const buf = this.buffer;
 
     // Construir átomos ilst
     const atoms = [];
     if (title) atoms.push(this.makeTextAtom('\u00a9nam', title));   // ©nam
     if (artist) atoms.push(this.makeTextAtom('\u00a9ART', artist));  // ©ART
+    if (album) atoms.push(this.makeTextAtom('\u00a9alb', album));   // ©alb
+    if (year) atoms.push(this.makeTextAtom('\u00a9day', year));    // ©day
+    if (track) atoms.push(this.makeTrackAtom(track));               // trkn
     if (coverBuffer) atoms.push(this.makeCoverAtom(coverBuffer));
 
     // Calcular tamaño total de ilst
@@ -143,23 +158,60 @@ class MP4Tagger {
       return result.buffer;
     }
 
-    // Insertar udtaAtom dentro de moov, al final
     const moovStart = moovResult.offset;
-    const moovSize = moovResult.size;
-    const newMoovSize = moovSize + udtaAtom.length;
+    let moovSize = moovResult.size;
+    let workingBuf = new Uint8Array(buf);
 
-    const result = new Uint8Array(buf.byteLength + udtaAtom.length);
-    const orig = new Uint8Array(buf);
+    // Búsqueda profunda para purgar un udta pre-existente
+    // Si YouTube ya incrustó un udta, iTunes leerá ESE primero y descartará el nuestro.
+    const udtaResult = this.findAtom(buf, 'udta', moovStart + 8);
+    if (udtaResult && udtaResult.offset < moovStart + moovSize) {
+      const uStart = udtaResult.offset;
+      const uSize = udtaResult.size;
+      const p1 = workingBuf.slice(0, uStart);
+      const p2 = workingBuf.slice(uStart + uSize);
+      const newBuf = new Uint8Array(p1.length + p2.length);
+      newBuf.set(p1, 0);
+      newBuf.set(p2, p1.length);
+      workingBuf = newBuf;
+      moovSize -= uSize;
+
+      // Asegurar que el tamaño reducido de moov se actualice antes de inyectar
+      this.writeUint32(workingBuf, moovStart, moovSize);
+    }
+
+    const newMoovSize = moovSize + udtaAtom.length;
+    const result = new Uint8Array(workingBuf.byteLength + udtaAtom.length);
 
     // Copiar todo hasta el final de moov
-    result.set(orig.slice(0, moovStart + moovSize));
+    result.set(workingBuf.slice(0, moovStart + moovSize));
     // Insertar udta al final de moov
     result.set(udtaAtom, moovStart + moovSize);
     // Copiar lo que viene después de moov
-    result.set(orig.slice(moovStart + moovSize), moovStart + moovSize + udtaAtom.length);
+    result.set(workingBuf.slice(moovStart + moovSize), moovStart + moovSize + udtaAtom.length);
 
     // Actualizar tamaño de moov
     this.writeUint32(result, moovStart, newMoovSize);
+
+    // Parche crítico para Apple Music:
+    // Los audios del catálogo de YouTube son DASH (Fragmented MP4), cuyo 'ftyp' es 'dash' o 'iso5'.
+    // Los reproductores de Apple IGNORAN los metadatos si ven la marca 'dash'.
+    // Sobrescribimos el ftyp en-sitio para que se identifique como un 'M4A ' estándar.
+    const ftypFinal = this.findAtom(result.buffer, 'ftyp');
+    if (ftypFinal) {
+      const start = ftypFinal.offset;
+      const size = ftypFinal.size;
+      const m4a = [0x4D, 0x34, 0x41, 0x20]; // 'M4A '
+      const isom = [0x69, 0x73, 0x6f, 0x6d]; // 'isom'
+
+      if (size >= 12) result.set(m4a, start + 8);
+      if (size >= 16) result.set([0, 0, 0, 0], start + 12);
+      if (size >= 20) result.set(m4a, start + 16);
+      if (size >= 24) result.set(isom, start + 20);
+      for (let i = 24; i < size; i += 4) {
+        result.set([0, 0, 0, 0], start + i); // wipe remaining brands
+      }
+    }
 
     return result.buffer;
   }

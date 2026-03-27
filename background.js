@@ -1,11 +1,14 @@
 // YouTube Music DL - background.js v5
 
 let audioUrlStore = {};
-const videoOnlyItags = [137, 248, 136, 247, 135, 244, 134, 243, 133, 242, 160, 278, 298, 299, 302, 303, 308, 315, 249, 250, 251];
+const videoOnlyItags = [137, 248, 136, 247, 135, 244, 134, 243, 133, 242, 160, 278, 298, 299, 302, 303, 308, 315];
 
 function processUrl(url) {
   try {
     const u = new URL(url);
+    const mime = u.searchParams.get('mime') || '';
+    if (mime.includes('webm')) return null;
+
     const itag = parseInt(u.searchParams.get('itag') || '0');
     if (videoOnlyItags.includes(itag)) return null;
 
