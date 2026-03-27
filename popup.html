@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>YouTube Music DL</title>
+<script src="id3writer.js"></script>
+<script src="mp4tags.js"></script>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap');
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    --bg: #0d0d0d;
+    --bg2: #1a1a1a;
+    --bg3: #242424;
+    --accent: #ff0040;
+    --accent2: #ff4d6d;
+    --text: #ffffff;
+    --muted: #888;
+    --border: #2a2a2a;
+  }
+
+  body {
+    width: 320px;
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    overflow: hidden;
+  }
+
+  .header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 16px 18px 12px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .logo {
+    width: 28px;
+    height: 28px;
+    background: var(--accent);
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    flex-shrink: 0;
+  }
+
+  .header-title {
+    font-size: 0.9rem;
+    font-weight: 700;
+    letter-spacing: 0.3px;
+  }
+
+  .header-sub {
+    font-size: 0.65rem;
+    color: var(--muted);
+    margin-top: 1px;
+  }
+
+  .song-card {
+    margin: 14px;
+    background: var(--bg2);
+    border-radius: 14px;
+    overflow: hidden;
+    border: 1px solid var(--border);
+  }
+
+  .song-cover {
+    width: 100%;
+    height: 160px;
+    object-fit: cover;
+    display: block;
+    background: var(--bg3);
+  }
+
+  .song-cover-placeholder {
+    width: 100%;
+    height: 160px;
+    background: linear-gradient(135deg, #1a1a2e, #2d1b2e);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 3rem;
+  }
+
+  .song-info {
+    padding: 14px 16px;
+  }
+
+  .song-title {
+    font-size: 1rem;
+    font-weight: 700;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .song-artist {
+    font-size: 0.78rem;
+    color: var(--muted);
+    margin-top: 3px;
+  }
+
+  .status-bar {
+    margin: 0 14px;
+    padding: 10px 14px;
+    background: var(--bg2);
+    border-radius: 10px;
+    border: 1px solid var(--border);
+    font-size: 0.75rem;
+    color: var(--muted);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    min-height: 40px;
+  }
+
+  .status-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--muted);
+    flex-shrink: 0;
+    transition: background 0.3s;
+  }
+
+  .status-dot.active { background: #00ff88; box-shadow: 0 0 6px #00ff88; }
+  .status-dot.loading { background: #ffaa00; animation: pulse 1s infinite; }
+  .status-dot.error { background: var(--accent); }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.3; }
+  }
+
+  .btn-download {
+    margin: 12px 14px 14px;
+    width: calc(100% - 28px);
+    padding: 13px;
+    background: var(--accent);
+    color: white;
+    border: none;
+    border-radius: 12px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.9rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    letter-spacing: 0.3px;
+  }
+
+  .btn-download:hover:not(:disabled) {
+    background: var(--accent2);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 20px rgba(255, 0, 64, 0.4);
+  }
+
+  .btn-download:active:not(:disabled) {
+    transform: translateY(0);
+  }
+
+  .btn-download:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+  }
+
+  .progress-wrap {
+    margin: 0 14px 14px;
+    display: none;
+  }
+
+  .progress-label {
+    font-size: 0.72rem;
+    color: var(--muted);
+    margin-bottom: 6px;
+    display: flex;
+    justify-content: space-between;
+  }
+
+  .progress-bar {
+    height: 4px;
+    background: var(--bg3);
+    border-radius: 4px;
+    overflow: hidden;
+  }
+
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--accent), var(--accent2));
+    border-radius: 4px;
+    width: 0%;
+    transition: width 0.3s;
+  }
+
+  .tip {
+    padding: 0 14px 14px;
+    font-size: 0.68rem;
+    color: #555;
+    text-align: center;
+    line-height: 1.5;
+  }
+
+  .tip a { color: var(--accent); text-decoration: none; }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="logo">🎵</div>
+  <div>
+    <div class="header-title">YouTube Music DL</div>
+    <div class="header-sub">Descargador personal</div>
+  </div>
+</div>
+
+<div class="song-card">
+  <div class="song-cover-placeholder" id="coverPlaceholder">🎵</div>
+  <img class="song-cover" id="coverImg" style="display:none" alt="cover">
+  <div class="song-info">
+    <div class="song-title" id="songTitle">Esperando canción...</div>
+    <div class="song-artist" id="songArtist">Abre YouTube Music y reproduce algo</div>
+  </div>
+</div>
+
+<div class="status-bar">
+  <div class="status-dot" id="statusDot"></div>
+  <span id="statusText">Esperando audio...</span>
+</div>
+
+<button class="btn-download" id="btnDownload" disabled>
+  <span>⬇</span> Descargar con portada
+</button>
+
+<div class="progress-wrap" id="progressWrap">
+  <div class="progress-label">
+    <span id="progressLabel">Descargando audio...</span>
+    <span id="progressPct">0%</span>
+  </div>
+  <div class="progress-bar">
+    <div class="progress-fill" id="progressFill"></div>
+  </div>
+</div>
+
+<div class="tip">
+  Reproduce la canción unos segundos antes de descargar para que se capture el stream de audio.
+</div>
+
+<script src="popup.js"></script>
+</body>
+</html>

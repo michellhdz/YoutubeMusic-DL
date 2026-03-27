@@ -1,0 +1,40 @@
+{
+  "manifest_version": 3,
+  "name": "YouTube Music DL",
+  "version": "3.0.0",
+  "description": "Descarga tus canciones de YouTube Music con imagen incrustada.",
+  "permissions": [
+    "activeTab",
+    "tabs",
+    "downloads",
+    "scripting",
+    "webRequest"
+  ],
+  "host_permissions": [
+    "https://music.youtube.com/*",
+    "https://*.youtube.com/*",
+    "https://*.googlevideo.com/*",
+    "https://*.c.youtube.com/*",
+    "https://lh3.googleusercontent.com/*",
+    "https://storage.googleapis.com/*",
+    "https://i.ytimg.com/*"
+  ],
+  "icons": {
+    "128": "icon.png"
+  },
+  "background": {
+    "service_worker": "background.js"
+  },
+  "action": {
+    "default_title": "YouTube Music DL",
+    "default_popup": "popup.html",
+    "default_icon": "icon.png"
+  },
+  "content_scripts": [
+    {
+      "matches": ["https://music.youtube.com/*"],
+      "js": ["content.js"],
+      "run_at": "document_start"
+    }
+  ]
+}
