@@ -1,4 +1,4 @@
-# YTM Metadata Toolkit & Archiver
+# YouTube Music DL
 
 > [!CAUTION]
 > ### ⚖️ Legal Disclaimer / Descargo de Responsabilidad
