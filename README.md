@@ -1,7 +1,7 @@
-# YouTube Music DL
+# YTM Metadata Toolkit & Archiver
 
 > [!CAUTION]
-> ### ⚖️ Legal Disclaimer 
+> ### ⚖️ Legal Disclaimer / Descargo de Responsabilidad
 > This tool is for **educational and personal research purposes only**. It was developed as a personal solution to manage and archive the developer's own music library, specifically to provide a more streamlined way to access personal tracks previously uploaded to YouTube Music where official export methods were found to be inefficient. The developer does not encourage or condone the unauthorized acquisition of copyrighted material. Users are solely responsible for complying with the YouTube Music Terms of Service and local copyright laws.
 
 ---

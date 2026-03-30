@@ -19,8 +19,7 @@
     "https://*.googleusercontent.com/*",
     "https://storage.googleapis.com/*",
     "https://*.ytimg.com/*",
-    "https://*.ggpht.com/*",
-    "https://*.googleusercontent.com/*"
+    "https://*.ggpht.com/*"
   ],
   "icons": {
     "128": "icon.png"
